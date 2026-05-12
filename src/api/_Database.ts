@@ -1,13 +1,90 @@
 //***********************************************************************/
-// Version 1.04 - 08.05.2026 Matthias Gutbrod
+// Version 1.05 - TypeScript Version - 09.05.2026
+// Original: Version 1.04 - 08.05.2026 Matthias Gutbrod
 //***********************************************************************/
+
+export interface Address {
+    street1: string;
+    street2: string;
+    city: string;
+    plz: string;
+}
+
+export interface Customer {
+    id: number;
+    firstname: string;
+    lastname: string;
+    companyname: string;
+    email: string;
+    password: string;
+    phone: string;
+    deliveryAddress: Address;
+    billingAddress: Address;
+}
+
+export type NewCustomer = Omit<Customer, 'id'> & { id?: number };
+
+export type AboType = 'Printed' | 'E-paper' | 'Website' | string;
+export type DeliveryMethod = 'Post' | 'Delivery man' | string;
+export type PaymentType = 'Credit Card' | 'Direct debit' | string;
+export type Payment = 'Monthly' | 'Annual' | string;
+export type SubscriptionType = 'Daily' | 'Weekend' | string;
+
+export interface Abo {
+    id: number;
+    cid: number;
+    created: string;
+    startabodate: string;
+    endabodate: string;
+    dataprivacyaccepted: boolean;
+    abotype: AboType;
+    deliverymethod: DeliveryMethod;
+    paymenttype: PaymentType;
+    payment: Payment;
+    subscriptiontype: SubscriptionType;
+    calculatedprice: number;
+    calculatedyearprice: number;
+    localpaperversions: number;
+}
+
+export type NewAbo = Omit<Abo, 'id'> & { id?: number };
+
+export interface LocalPaperVersion {
+    id: number;
+    name: string;
+    picture: string;
+}
+
+export type LocalVersionsResult = Record<number, LocalPaperVersion> | LocalPaperVersion[] | Record<string, never>;
+
+export interface CompanyInfos {
+    name: string;
+    plz: string;
+    city: string;
+    employees: number;
+}
+
+export interface DistanceResult {
+    distance: number;
+    plzDestination: string;
+}
+
+export interface PlzCoordinate {
+    primary_key: number;
+    zipcode: string;
+    city: string;
+    state: string;
+    community: string;
+    latitude: number;
+    longitude: number;
+}
 
 //*************************************/
 //Export functions
 //*************************************/
 
 // 1. Berechne die Strecke von der Firma bis zum Kunden für die Preisberechnung
-    export function _chechDatabaseDistance(plzDestination){
+    export function _chechDatabaseDistance(plzDestination: string): Promise<DistanceResult>{
         
         //Check distance
         if(pressCompanyInfos.plz === plzDestination){
@@ -37,7 +114,7 @@
     }
 
 // 2. Kundendaten
-    export function _saveCustomer(customerObj){
+    export function _saveCustomer(customerObj: NewCustomer): Promise<boolean>{
         return new Promise((res, rej) => {
             customerObj.id = Object.values(customers).length + 1
             let isEmailUsed = Object.values(customers).find((customer) => customer.email===customerObj.email)
@@ -51,7 +128,7 @@
                 {
                     customers = {
                         ...customers,
-                        [customerObj.id]:customerObj    
+                        [customerObj.id as number]: customerObj as Customer    
                     }   
                     res(true)
                 }, 100)
@@ -59,27 +136,27 @@
         })
     }
 
-    export function _updateCustomer(customer){
+    export function _updateCustomer(customer: Customer): Promise<boolean>{
         return new Promise((res, rej) => {
             customers[customer.id] = customer
             res(true)
         })
     }
 
-    export function _readCustomer(customerEmail){
+    export function _readCustomer(customerEmail: string): Promise<Customer | undefined>{
         return new Promise((res, rej) => {
             setTimeout(() => res(Object.values(customers).find((customer) => customer.email===customerEmail)), 1500)
         })
     }
 
-    export function _deleteCustomer(customerId){
+    export function _deleteCustomer(customerId: number): Promise<boolean>{
         return new Promise((res, rej) => {
             delete customers[customerId]
             res(true)
         })
     }
 
-    export function _getAllCustomer(){
+    export function _getAllCustomer(): Promise<Record<number, Customer>>{
         return new Promise((res, rej) => {
             setTimeout(() => res({...customers}), 2000)
         })
@@ -87,14 +164,14 @@
 
 // 3. Abo/Abonnement
 
-export function _saveAbo(newAbo){
+export function _saveAbo(newAbo: NewAbo): Promise<boolean>{
     return new Promise((res, rej) => {
         newAbo.id = Object.values(abos).length + 1
         setTimeout(() => 
         {
             abos = {
                 ...abos,
-                [newAbo.id]:newAbo    
+                [newAbo.id as number]: newAbo as Abo    
             }   
             res(true)
         }, 100)
@@ -102,27 +179,27 @@ export function _saveAbo(newAbo){
     })
 }
 
-export function _updateAbo(abo){
+export function _updateAbo(abo: Abo): Promise<boolean>{
     return new Promise((res, rej) => {
         abos[abo.id] = abo
         res(true)
     })
 }
 
-export function _readAbo(aboId){
+export function _readAbo(aboId: number): Promise<Abo | undefined>{
     return new Promise((res, rej) => {
         setTimeout(() => res(Object.values(abos).find((abo) => abo.id===aboId)), 1500)
     })
 }
 
-export function _deleteAbo(aboId){
+export function _deleteAbo(aboId: number): Promise<boolean>{
     return new Promise((res, rej) => {
         delete abos[aboId]
         res(true)
     })
 }
 
-export function _getAllAbosForCustomer(customerId){
+export function _getAllAbosForCustomer(customerId: number): Promise<Abo[]>{
     return new Promise((res, rej) => {
         setTimeout(() => 
         {
@@ -132,14 +209,14 @@ export function _getAllAbosForCustomer(customerId){
     })
 }
 
-export function _readAllAbos(){
+export function _readAllAbos(): Promise<Record<number, Abo>>{
     return new Promise((res, rej) => {
         setTimeout(() => res({...abos}), 1000)
     })
 }
 
 // 4. Lokalausgaben
-export function _getLocalVersionsForPlz(plz){
+export function _getLocalVersionsForPlz(plz?: string | number): Promise<LocalVersionsResult>{
     return new Promise((res, rej) => {
         setTimeout(() => 
         {
@@ -150,7 +227,7 @@ export function _getLocalVersionsForPlz(plz){
             else
             {
                 let startnumber = plz.toString().charAt(0)
-                let localversions={}
+                let localversions: LocalVersionsResult = {}
                 switch(startnumber){
                     case '0':
                     case '1':
@@ -176,7 +253,7 @@ export function _getLocalVersionsForPlz(plz){
 //*************************************/
 //Helper functions
 //*************************************/
-function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+function getDistanceFromLatLonInKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
     var R = 6371; // Radius of the earth in km
     var dLat = deg2rad(lat2-lat1);  // deg2rad below
     var dLon = deg2rad(lon2-lon1); 
@@ -190,14 +267,14 @@ function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
     return d;
 }
   
-function deg2rad(deg) {
+function deg2rad(deg: number): number {
     return deg * (Math.PI/180)
 }
 
 //*********************************/
 //Database - Lokalausgaben
 //*********************************/
-let localpaperversions = {
+let localpaperversions: Record<number, LocalPaperVersion> = {
     1:{
         id:1,
         name:'Stadtausgabe',
@@ -221,7 +298,7 @@ let localpaperversions = {
 //*********************************/
 // Can be changed! :)
 
-const pressCompanyInfos = {
+const pressCompanyInfos: CompanyInfos = {
     name:"New Digital Media Power",
     plz:"72762",
     city:"Reutlingen",
@@ -232,7 +309,7 @@ const pressCompanyInfos = {
 //Database - Abo/Abonnement
 //*********************************/
 
-let abos = {
+let abos: Record<number, Abo> = {
     1: {
         id: 1,
         cid:1,
@@ -255,7 +332,7 @@ let abos = {
 //Database - Kunde
 //*********************************/
 
-let customers = {
+let customers: Record<number, Customer> = {
   1: {
     id: 1,
     firstname: 'Matthias',
@@ -282,7 +359,7 @@ let customers = {
 //*********************************/
 //Database - PLZ distance
 //*********************************/
-const plzToCoordinates = {
+const plzToCoordinates: Record<string, PlzCoordinate> = {
     "1": {
         "primary_key": 1,
         "zipcode": "01945",

@@ -1,14 +1,19 @@
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Header } from './components/Header'
+import Home from './pages/Home'
+import SignInPage from './pages/Auth/SignInPage'
+import SignUpPage from './pages/Auth/SignUpPage'
 
 function App() {
-
   return (
-    <main>
-      <h1>Welcome to the Abo-Shop</h1>
+    <BrowserRouter>
       <Header />
-      
-    </main>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<SignInPage />} />
+        <Route path="/registrierung" element={<SignUpPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

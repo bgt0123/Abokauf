@@ -10,7 +10,8 @@ export interface Address {
     plz: string;
 }
 
-export interface Customer {
+export interface 
+Customer {
     id: number;
     firstname: string;
     lastname: string;

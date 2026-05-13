@@ -20,7 +20,7 @@ import {
     type NewCustomer,
 } from './_Database';
 
-export type { Abo, Customer, DistanceResult, LocalVersionsResult, NewAbo, NewCustomer } from './_Database';
+export type { Abo, Customer, NewCustomer, Address, DistanceResult, LocalPaperVersion, LocalVersionsResult, NewAbo } from './_Database';
 
 //****************************************/
 // 1. Berechne die Strecke von der Firma bis zum Kunden für die Preisberechnung

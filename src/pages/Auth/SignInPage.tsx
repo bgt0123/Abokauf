@@ -1,32 +1,21 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { readCustomer } from '../../api/api'
+import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { loginThunk, selectAuthError, selectAuthLoading } from '../../features/auth/authSlice'
 
 export default function SignInPage() {
-    const [email, setEmail] = useState('')
+    const [identifier, setIdentifier] = useState('')
     const [password, setPassword] = useState('')
-    const [error, setError] = useState('')
-    const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const dispatch = useAppDispatch()
+    const loading = useAppSelector(selectAuthLoading)
+    const reduxError = useAppSelector(selectAuthError)
 
-    async function handleSubmit(e: React.ChangeEvent<HTMLFormElement>) {
+    async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
         e.preventDefault()
-        setError('')
-        setLoading(true)
-
-        try {
-            const { customer } = await readCustomer(email)
-            const found = customer[0]
-
-            if (!found || found.password !== password) {
-                setError('E-Mail oder Passwort ist falsch.')
-            } else {
-                navigate('/konfigurator')
-            }
-        } catch {
-            setError('Anmeldung fehlgeschlagen. Bitte versuche es erneut.')
-        } finally {
-            setLoading(false)
+        const result = await dispatch(loginThunk({ identifier, password }))
+        if (loginThunk.fulfilled.match(result)) {
+            navigate('/konfigurator')
         }
     }
 
@@ -38,15 +27,15 @@ export default function SignInPage() {
 
                 <form onSubmit={handleSubmit} style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <div className="form-group">
-                        <label className="form-label" htmlFor="email">E-Mail</label>
+                        <label className="form-label" htmlFor="identifier">Benutzername oder E-Mail</label>
                         <input
-                            id="email"
-                            type="email"
+                            id="identifier"
+                            type="text"
                             className="input"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
+                            value={identifier}
+                            onChange={e => setIdentifier(e.target.value)}
                             required
-                            autoComplete="email"
+                            autoComplete="username"
                         />
                     </div>
 
@@ -63,7 +52,7 @@ export default function SignInPage() {
                         />
                     </div>
 
-                    {error && <p className="form-error">{error}</p>}
+                    {reduxError && <p className="form-error">{reduxError}</p>}
 
                     <button type="submit" className="btn btn--primary" disabled={loading}>
                         {loading ? 'Wird geprüft…' : 'Anmelden'}

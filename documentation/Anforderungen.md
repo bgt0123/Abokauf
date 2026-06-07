@@ -80,7 +80,6 @@ type Adresse = {
   hausnummer: string;
   plz: string;        // nur deutsche PLZs
   stadt: string;
-  land: string;       // default: "Deutschland"
 };
 ```
 

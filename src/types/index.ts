@@ -1,4 +1,3 @@
-// ── Re-exports aus der API-Schicht ────────────────────────────────────────
 import type {
     Address,
     Customer,
@@ -21,9 +20,6 @@ export type {
     DistanceResult,
 }
 
-// ── Strikte Union-Types ────────────────────────────────────────────────────
-// Die DB-Typen erlauben | string; hier erzwingen wir die gültigen Werte.
-
 /** Gedruckte Zeitung, E-Paper oder Web-Zugang */
 export type AboTyp = 'Printed' | 'E-paper' | 'Website'
 
@@ -43,6 +39,7 @@ export type Zahlungsart = 'Direct debit' | 'Credit Card'
 /** Zwischenspeicher für den aktuell konfigurierten Abo-Entwurf */
 export interface KonfiguratorState {
     aboTyp:               AboTyp | null
+    lieferStreet:         string
     lieferPlz:            string
     lieferCity:           string
     lokalausgabeId:       number | null
@@ -53,11 +50,8 @@ export interface KonfiguratorState {
     startDatum:           string
     austraegerHinweis:    string
     berechneterPreis:     number | null
-}
-
-// ── App-State ──────────────────────────────────────────────────────────────
-/** Eingeloggter User zur Laufzeit */
-export interface AuthState {
-    currentUser: import('./index').Customer | null
-    isLoggedIn:  boolean
+    rechnungsAbweichend:  boolean
+    rechnungsStreet:      string
+    rechnungsPlz:         string
+    rechnungsCity:        string
 }

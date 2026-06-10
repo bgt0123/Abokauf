@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { loginThunk, selectAuthError, selectAuthLoading } from '../../features/auth/authSlice'
+import { addToast } from '../../features/notifications/notificationsSlice'
 
 export default function SignInPage() {
     const [identifier, setIdentifier] = useState('')
@@ -15,6 +16,7 @@ export default function SignInPage() {
         e.preventDefault()
         const result = await dispatch(loginThunk({ identifier, password }))
         if (loginThunk.fulfilled.match(result)) {
+            dispatch(addToast({ message: 'Erfolgreich angemeldet!', type: 'success' }))
             navigate('/konfigurator')
         }
     }

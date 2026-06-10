@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Newspaper, User, LogOut, Sun, Moon } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { logout, selectCurrentUser } from '../features/auth/authSlice'
-import { useTheme } from '../hooks/useTheme'
+import { useTheme } from '../app/useTheme'
 import './Header.css'
 
 export function Header() {

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Check, X } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { registerThunk, selectAuthError, selectAuthLoading } from '../../features/auth/authSlice'
+import { addToast } from '../../features/notifications/notificationsSlice'
 import type { NewCustomer } from '../../types'
 import './SignUpPage.css'
 
@@ -92,7 +93,8 @@ export default function SignUpPage() {
         }
         const result = await dispatch(registerThunk(newCustomer))
         if (registerThunk.fulfilled.match(result)) {
-            navigate('/')
+            dispatch(addToast({ message: 'Konto erfolgreich erstellt!', type: 'success' }))
+            navigate('/konfigurator')
         }
     }
 

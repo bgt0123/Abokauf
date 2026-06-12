@@ -135,7 +135,7 @@ export default function KonfiguratorPage() {
             dataprivacyaccepted: dataprivacy,
             abotype:             konfig.aboTyp ?? 'E-paper',
             deliverymethod:      konfig.zustellungsart ?? 'Post',
-            paymenttype:         konfig.zahlungsart ?? 'Direct debit',
+            paymenttype:         konfig.zahlungsart  ?? 'Invoice',
             payment:             konfig.zahlungsintervall ?? 'Monthly',
             subscriptiontype:    konfig.belieferungsintervall ?? 'Daily',
             calculatedprice:     monthly,

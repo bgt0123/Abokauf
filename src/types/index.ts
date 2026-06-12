@@ -33,7 +33,7 @@ export type Belieferungsintervall = 'Daily' | 'Weekend'
 export type Zahlungsintervall = 'Monthly' | 'Annual'
 
 /** Zahlung per Lastschrift oder per Rechnung */
-export type Zahlungsart = 'Direct debit' | 'Credit Card'
+export type Zahlungsart = 'Direct debit' | 'Invoice'
 
 // ── Konfigurator-State ─────────────────────────────────────────────────────
 /** Zwischenspeicher für den aktuell konfigurierten Abo-Entwurf */

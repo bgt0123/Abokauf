@@ -26,7 +26,7 @@ const ZAHLUNG_LABELS: Record<string, string> = {
 }
 const ZAHLUNGSART_LABELS: Record<string, string> = {
     'Direct debit': 'Lastschrift',
-    'Credit Card':  'Kreditkarte',
+    'Invoice':      'Rechnung',
 }
 
 export default function BestellungBestaetigung() {

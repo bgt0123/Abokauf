@@ -61,10 +61,10 @@ export function PaymentForm({
                         onClick={() => onZahlungsartChange('Direct debit')}
                     />
                     <OptionCard
-                        label="Kreditkarte"
-                        description="Visa, Mastercard"
-                        selected={zahlungsart === 'Credit Card'}
-                        onClick={() => onZahlungsartChange('Credit Card')}
+                        label="Rechnung"
+                        description="Zahlung per Rechnung"
+                        selected={zahlungsart === 'Invoice'}
+                        onClick={() => onZahlungsartChange('Invoice')}
                     />
                 </div>
             </div>

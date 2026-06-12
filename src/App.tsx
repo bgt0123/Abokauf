@@ -7,6 +7,7 @@ import SignInPage from './pages/Auth/SignInPage'
 import SignUpPage from './pages/Auth/SignUpPage'
 import KonfiguratorPage from './pages/Konfigurator/KonfiguratorPage'
 import BestellungBestaetigung from './pages/Bestellung/BestellungBestaetigung'
+import ProduktDetailPage from './pages/Produkt/ProduktDetailPage'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<SignInPage />} />
         <Route path="/registrierung" element={<SignUpPage />} />
+        <Route path="/produkt/:type" element={<ProduktDetailPage />} />
         <Route path="/konfigurator" element={<KonfiguratorPage />} />
         <Route path="/bestellung/bestaetigung" element={<BestellungBestaetigung />} />
       </Routes>

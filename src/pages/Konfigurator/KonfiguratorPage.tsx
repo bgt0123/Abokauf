@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Newspaper, Globe, Tablet } from 'lucide-react'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import {
     setField, reset, submitAboThunk,
@@ -9,7 +8,7 @@ import {
     selectPlzLoading, selectSubmitLoading, selectKonfiguratorError,
 } from '../../features/konfigurator/konfiguratorSlice'
 import { selectCurrentUser, selectIsLoggedIn } from '../../features/auth/authSlice'
-import type { AboTyp, KonfiguratorState } from '../../types'
+import type { KonfiguratorState } from '../../types'
 import { calcMonthlyPrice, calcFinalPrice, calcYearlyPrice, calcDistanceSurcharge, formatPrice } from '../../utils/priceUtils'
 import { StepIndicator }       from './components/StepIndicator'
 import { OptionCard }          from './components/OptionCard'
@@ -20,30 +19,29 @@ import { PaymentForm }         from './components/PaymentForm'
 import { OrderSummary }        from './components/OrderSummary'
 import './KonfiguratorPage.css'
 
-type StepId = 'aboTyp' | 'region' | 'zustellung' | 'zahlung' | 'zusammenfassung'
+type StepId = 'region' | 'zustellung' | 'zahlung' | 'zusammenfassung'
 
 const STEP_LABELS: Record<StepId, string> = {
-    aboTyp:          'Abo-Typ',
     region:          'Region',
     zustellung:      'Lieferung',
     zahlung:         'Zahlung',
     zusammenfassung: 'Zusammenfassung',
 }
 
-function getFlow(aboTyp: AboTyp | null): StepId[] {
+function getFlow(aboTyp: KonfiguratorState['aboTyp']): StepId[] {
     if (aboTyp === 'Printed') {
-        return ['aboTyp', 'region', 'zustellung', 'zahlung', 'zusammenfassung']
+        return ['region', 'zustellung', 'zahlung', 'zusammenfassung']
     }
-    return ['aboTyp', 'region', 'zahlung', 'zusammenfassung']
+    return ['region', 'zahlung', 'zusammenfassung']
 }
 
 // ── Page ─────────────────────────────────────────────
 export default function KonfiguratorPage() {
-    const dispatch     = useAppDispatch()
-    const navigate     = useNavigate()
-    const isLoggedIn   = useAppSelector(selectIsLoggedIn)
-    const currentUser  = useAppSelector(selectCurrentUser)
-    const konfig       = useAppSelector(selectKonfigurator)
+    const dispatch      = useAppDispatch()
+    const navigate      = useNavigate()
+    const isLoggedIn    = useAppSelector(selectIsLoggedIn)
+    const currentUser   = useAppSelector(selectCurrentUser)
+    const konfig        = useAppSelector(selectKonfigurator)
     const localVersions = useAppSelector(selectLocalVersions)
     const distanceKm    = useAppSelector(selectDistanceKm)
     const plzLoading    = useAppSelector(selectPlzLoading)
@@ -75,6 +73,8 @@ export default function KonfiguratorPage() {
     }, [step, useAltPlz]) // eslint-disable-line react-hooks/exhaustive-deps
 
     if (!isLoggedIn) return null
+    if (konfig.aboTyp === null) return <Navigate to="/" replace />
+
     const labels  = flow.map(s => STEP_LABELS[s])
     const monthly = calcMonthlyPrice(konfig, distanceKm)
     const isLast  = stepIndex === flow.length - 1
@@ -86,10 +86,9 @@ export default function KonfiguratorPage() {
 
     function canProceed(): boolean {
         switch (step) {
-            case 'aboTyp':          return konfig.aboTyp !== null && !!konfig.startDatum
             case 'region':          return konfig.lokalausgabeId !== null
             case 'zustellung':      return konfig.zustellungsart !== null && konfig.belieferungsintervall !== null
-            case 'zahlung':         return konfig.zahlungsintervall !== null && konfig.zahlungsart !== null
+            case 'zahlung':         return konfig.zahlungsintervall !== null && konfig.zahlungsart !== null && !!konfig.startDatum
             case 'zusammenfassung': return true
         }
     }
@@ -135,7 +134,7 @@ export default function KonfiguratorPage() {
             dataprivacyaccepted: dataprivacy,
             abotype:             konfig.aboTyp ?? 'E-paper',
             deliverymethod:      konfig.zustellungsart ?? 'Post',
-            paymenttype:         konfig.zahlungsart  ?? 'Invoice',
+            paymenttype:         konfig.zahlungsart ?? 'Invoice',
             payment:             konfig.zahlungsintervall ?? 'Monthly',
             subscriptiontype:    konfig.belieferungsintervall ?? 'Daily',
             calculatedprice:     monthly,
@@ -179,55 +178,11 @@ export default function KonfiguratorPage() {
 
                 <div className="konfig-content">
 
-                    {/* Step 1 — Abo-Typ */}
-                    {step === 'aboTyp' && (
-                        <div className="konfig-step">
-                            <h2 className="konfig-step__title">Welche Art von Abo möchtest du?</h2>
-                            <div className="option-cards option-cards--3">
-                                <OptionCard
-                                    label="Gedruckte Zeitung"
-                                    description="Täglich direkt zu dir nach Hause"
-                                    icon={<Newspaper size={28} strokeWidth={1.5} />}
-                                    selected={konfig.aboTyp === 'Printed'}
-                                    onClick={() => set('aboTyp', 'Printed')}
-                                />
-                                <OptionCard
-                                    label="E-Paper"
-                                    description="Die digitale Zeitung auf allen Geräten"
-                                    icon={<Tablet size={28} strokeWidth={1.5} />}
-                                    selected={konfig.aboTyp === 'E-paper'}
-                                    onClick={() => set('aboTyp', 'E-paper')}
-                                />
-                                <OptionCard
-                                    label="Website-Zugang"
-                                    description="Unbegrenzter Zugang zu allen Online-Artikeln"
-                                    icon={<Globe size={28} strokeWidth={1.5} />}
-                                    selected={konfig.aboTyp === 'Website'}
-                                    onClick={() => set('aboTyp', 'Website')}
-                                />
-                            </div>
-                            <div className="konfig-section">
-                                <div className="form-group">
-                                    <label className="form-label" htmlFor="startDatum">Startdatum vom Abo*</label>
-                                    <input
-                                        id="startDatum"
-                                        type="date"
-                                        className="input"
-                                        value={konfig.startDatum}
-                                        min={new Date().toISOString().slice(0, 10)}
-                                        onChange={e => set('startDatum', e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Step 2 — Region */}
+                    {/* Step 1 — Region */}
                     {step === 'region' && (
                         <div className="konfig-step">
                             <h2 className="konfig-step__title">In welcher Region wohnst du?</h2>
 
-                            {/* Registered address display */}
                             <div className="user-address-box">
                                 <span className="user-address-box__label">Deine Lieferadresse</span>
                                 <span className="user-address-box__value">
@@ -238,7 +193,6 @@ export default function KonfiguratorPage() {
                                 </span>
                             </div>
 
-                            {/* Alternative address toggle */}
                             <label className="dataprivacy-check" style={{ marginTop: 8 }}>
                                 <input
                                     type="checkbox"
@@ -277,7 +231,7 @@ export default function KonfiguratorPage() {
                         </div>
                     )}
 
-                    {/* Step 3 — Zustellung (nur Printed) */}
+                    {/* Step 2 — Zustellung (nur Printed) */}
                     {step === 'zustellung' && (
                         <div className="konfig-step">
                             <h2 className="konfig-step__title">Wie soll geliefert werden?</h2>
@@ -346,10 +300,29 @@ export default function KonfiguratorPage() {
                         </div>
                     )}
 
-                    {/* Step 4 — Zahlung */}
+                    {/* Step 3 — Zahlung & Startdatum */}
                     {step === 'zahlung' && (
                         <div className="konfig-step">
-                            <h2 className="konfig-step__title">Wie möchtest du zahlen?</h2>
+                            <h2 className="konfig-step__title">Vertragsdetails</h2>
+
+                            <div className="konfig-section">
+                                <h3 className="konfig-section__title">Startdatum</h3>
+                                <div className="form-group">
+                                    <label className="form-label" htmlFor="startDatum">
+                                        Ab wann soll das Abo beginnen? *
+                                    </label>
+                                    <input
+                                        id="startDatum"
+                                        type="date"
+                                        className="input"
+                                        style={{ maxWidth: 220 }}
+                                        value={konfig.startDatum}
+                                        min={new Date().toISOString().slice(0, 10)}
+                                        onChange={e => set('startDatum', e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
                             <PaymentForm
                                 zahlungsintervall={konfig.zahlungsintervall}
                                 zahlungsart={konfig.zahlungsart}
@@ -415,7 +388,7 @@ export default function KonfiguratorPage() {
                         </div>
                     )}
 
-                    {/* Step 5 — Zusammenfassung */}
+                    {/* Step 4 — Zusammenfassung */}
                     {step === 'zusammenfassung' && (
                         <div className="konfig-step">
                             <h2 className="konfig-step__title">Bestellübersicht</h2>

@@ -258,9 +258,186 @@
     line-height: 1.6;
 }
 
+/* ── Logged-in hero ─────────────────────────────────── */
+.home__hero--logged {
+    padding: 48px 0 32px;
+}
+
+.home__hero-title--sm {
+    font-size: 38px;
+}
+
+/* ── Meine Abos ─────────────────────────────────────── */
+.home__my-abos {
+    display: flex;
+    flex-direction: column;
+}
+
+.home__abo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.home__abo-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 24px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--bg);
+}
+
+.home__abo-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.home__abo-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.home__abo-card-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.home__abo-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-h);
+}
+
+.home__abo-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #16a34a;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 2px 8px;
+    border-radius: 20px;
+    width: fit-content;
+}
+
+.home__abo-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+}
+
+.home__abo-detail {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+
+.home__abo-detail-label {
+    color: var(--text);
+}
+
+.home__abo-detail-value {
+    color: var(--text-h);
+    font-weight: 500;
+}
+
+.home__abo-detail--highlight .home__abo-detail-value {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* ── Empty state ─────────────────────────────────────── */
+.home__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 48px 24px;
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+    text-align: center;
+}
+
+.home__empty-icon {
+    color: var(--accent);
+    opacity: 0.5;
+}
+
+.home__empty-text {
+    font-size: 15px;
+    color: var(--text);
+}
+
+/* ── Karten-Aktionen (doppelte Buttons) ─────────────── */
+.home__card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.home__card-action--primary {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s;
+}
+
+.home__card-action--primary:hover {
+    opacity: 0.88;
+}
+
+.home__card-action--secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.home__card-action--secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Flexible Spaltenanzahl für Upsell-Karten */
+.home__cards--1 { grid-template-columns: minmax(0, 420px); }
+.home__cards--2 { grid-template-columns: repeat(2, 1fr); }
+
 /* ── Responsive ─────────────────────────────────────── */
 @media (max-width: 768px) {
-    .home__cards {
+    .home__cards,
+    .home__cards--2 {
         grid-template-columns: 1fr;
     }
 
@@ -270,5 +447,13 @@
 
     .home__section-title {
         font-size: 22px;
+    }
+
+    .home__hero-title--sm {
+        font-size: 28px;
+    }
+
+    .home__abo-grid {
+        grid-template-columns: 1fr;
     }
 }

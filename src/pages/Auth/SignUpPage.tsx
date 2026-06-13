@@ -84,7 +84,7 @@ export default function SignUpPage() {
         const newCustomer: NewCustomer = {
             firstname:       form.vorname,
             lastname:        form.nachname,
-            companyname:     form.username,
+            companyname:     form.username, // DB-Schema (vorgegeben) hat kein username-Feld — companyname wird als Username verwendet.
             email:           form.email,
             password:        form.password,
             phone:           '',

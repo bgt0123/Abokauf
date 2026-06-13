@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { loginThunk, selectAuthError, selectAuthLoading } from '../../features/auth/authSlice'
 import { addToast } from '../../features/notifications/notificationsSlice'
+import './SignInPage.css'
 
 export default function SignInPage() {
     const [identifier, setIdentifier] = useState('')
@@ -23,11 +24,11 @@ export default function SignInPage() {
 
     return (
         <div className="page">
-            <div className="card" style={{ width: '100%', maxWidth: 420 }}>
+            <div className="card signin-card">
                 <h1 className="page__title">Anmelden</h1>
                 <p className="page__subtitle">Melde dich an, um ein Abo abzuschließen.</p>
 
-                <form onSubmit={handleSubmit} style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <form onSubmit={handleSubmit} className="signin-form">
                     <div className="form-group">
                         <label className="form-label" htmlFor="identifier">Benutzername oder E-Mail</label>
                         <input
@@ -61,9 +62,9 @@ export default function SignInPage() {
                     </button>
                 </form>
 
-                <p style={{ marginTop: 16, fontSize: 14, color: 'var(--text)' }}>
+                <p className="signin-hint">
                     Noch kein Konto?{' '}
-                    <Link to="/registrierung" style={{ color: 'var(--accent)' }}>Jetzt registrieren</Link>
+                    <Link to="/registrierung">Jetzt registrieren</Link>
                 </p>
             </div>
         </div>

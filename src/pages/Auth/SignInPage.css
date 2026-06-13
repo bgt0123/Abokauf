@@ -1,0 +1,21 @@
+.signin-card {
+    width: 100%;
+    max-width: 420px;
+}
+
+.signin-form {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.signin-hint {
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.signin-hint a {
+    color: var(--accent);
+}

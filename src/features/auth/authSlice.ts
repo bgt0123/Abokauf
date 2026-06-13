@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, isAnyOf } from '@reduxjs/toolkit'
 import type { Customer, NewCustomer } from '../../types'
 import { readCustomer, getAllCustomers, saveCustomer, updateCustomer } from '../../api/api'
 
@@ -20,7 +20,7 @@ export const loginThunk = createAsyncThunk<
     Customer,
     { identifier: string; password: string },
     { rejectValue: string }
->(
+>( //THUNK: Gibt den aktuell angemeldeten Kunden zurück. Akzeptiert als "identifier" entweder die E-Mail-Adresse oder username (companyname).
     'auth/login',
     async ({ identifier, password }, { rejectWithValue }) => {
         try {
@@ -28,8 +28,9 @@ export const loginThunk = createAsyncThunk<
 
             if (identifier.includes('@')) {
                 const { customer } = await readCustomer(identifier)
-                found = customer[0]
+                found = customer[0] // Mehrere Kunden mit gleicher E-Mail sind laut Anforderung nicht erlaubt — erster Treffer reicht.
             } else {
+                // Das DB-Schema (vorgegeben) verwendet `companyname` als Username-Feld.
                 const { allCustomers } = await getAllCustomers()
                 found = Object.values(allCustomers).find(c => c.companyname === identifier)
             }
@@ -98,35 +99,19 @@ const authSlice = createSlice({
         },
     },
     extraReducers: builder => {
-        const pending   = (state: AuthState) => { state.loading = true;  state.error = null }
-        const rejected  = (state: AuthState, action: { payload?: string }) => {
-            state.loading = false
-            state.error   = action.payload ?? 'Unbekannter Fehler.'
-        }
-
         builder
-            .addCase(loginThunk.pending,   pending)
-            .addCase(loginThunk.fulfilled, (state, action) => {
-                state.loading      = false
-                state.currentUser  = action.payload
-            })
-            .addCase(loginThunk.rejected,  rejected)
-
-        builder
-            .addCase(registerThunk.pending,   pending)
-            .addCase(registerThunk.fulfilled, (state, action) => {
-                state.loading     = false
-                state.currentUser = action.payload
-            })
-            .addCase(registerThunk.rejected,  rejected)
-
-        builder
-            .addCase(updateCustomerThunk.pending,   pending)
-            .addCase(updateCustomerThunk.fulfilled, (state, action) => {
-                state.loading     = false
-                state.currentUser = action.payload
-            })
-            .addCase(updateCustomerThunk.rejected,  rejected)
+            .addMatcher(
+                isAnyOf(loginThunk.pending, registerThunk.pending, updateCustomerThunk.pending),
+                state => { state.loading = true; state.error = null }
+            )
+            .addMatcher(
+                isAnyOf(loginThunk.fulfilled, registerThunk.fulfilled, updateCustomerThunk.fulfilled),
+                (state, action) => { state.loading = false; state.currentUser = action.payload }
+            )
+            .addMatcher(
+                isAnyOf(loginThunk.rejected, registerThunk.rejected, updateCustomerThunk.rejected),
+                (state, action) => { state.loading = false; state.error = action.payload ?? 'Unbekannter Fehler.' }
+            )
     },
 })
 

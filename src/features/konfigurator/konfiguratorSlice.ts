@@ -1,5 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
 import type { KonfiguratorState, LocalVersionsResult, NewAbo } from '../../types'
 import {
     saveAboForCustomer,
@@ -73,12 +72,11 @@ export const fetchDistanceThunk = createAsyncThunk<
     }
 )
 
-export const submitAboThunk = createAsyncThunk<boolean, NewAbo, { rejectValue: string }>(
+export const submitAboThunk = createAsyncThunk<void, NewAbo, { rejectValue: string }>(
     'konfigurator/submitAbo',
     async (newAbo, { rejectWithValue }) => {
         try {
             await saveAboForCustomer(newAbo)
-            return true
         } catch {
             return rejectWithValue('Bestellung fehlgeschlagen. Bitte versuche es erneut.')
         }

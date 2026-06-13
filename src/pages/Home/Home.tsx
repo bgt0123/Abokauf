@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
-    Newspaper, Tablet, Globe, CheckCircle2,
+    CheckCircle2,
     Truck, Zap, Shield, CalendarCheck, ArrowRight,
     PackageCheck, Sparkles,
 } from 'lucide-react'
@@ -11,98 +11,17 @@ import { setField } from '../../features/konfigurator/konfiguratorSlice'
 import { readAllAbosForCustomer } from '../../api/api'
 import type { Abo, AboTyp } from '../../types'
 import { PAYMENT_LABELS, ZAHLUNGSART_LABELS, DELIVERY_LABELS, INTERVAL_LABELS } from '../../constants/labels'
+import { ABO_TYPES, ABO_URL, ABO_META } from '../../data/produkte'
 import './Home.css'
 
-// ── Katalog ───────────────────────────────────────────
-const ABO_TYPES: AboTyp[] = ['Printed', 'E-paper', 'Website']
-type AboKey = AboTyp
-
-const ABO_URL: Record<AboKey, string> = {
-    Printed:  '/produkt/printed',
-    'E-paper': '/produkt/e-paper',
-    Website:  '/produkt/website',
-}
-
-const ABO_META: Record<AboKey, {
-    icon: React.ReactNode
-    iconColor: string
-    iconBg: string
-    badge: string | null
-    title: string
-    subtitle: string
-    features: string[]
-    priceFrom: string
-}> = {
-    Printed: {
-        icon: <Newspaper size={28} strokeWidth={1.5} />,
-        iconColor: '#1d4ed8',
-        iconBg: '#eff6ff',
-        badge: 'Beliebteste Wahl',
-        title: 'Gedruckte Zeitung',
-        subtitle: 'Die klassische Zeitung direkt in Ihren Briefkasten',
-        features: [
-            'Tägliche Zustellung zwischen 4–6 Uhr',
-            'Stadtausgabe oder Umland',
-            'Täglich oder nur Wochenende',
-            'Individuelle Austrägerhinweise',
-        ],
-        priceFrom: '19,90',
-    },
-    'E-paper': {
-        icon: <Tablet size={28} strokeWidth={1.5} />,
-        iconColor: '#0891b2',
-        iconBg: '#ecfeff',
-        badge: null,
-        title: 'E-Paper',
-        subtitle: 'Die digitale Zeitung für Tablet und Smartphone',
-        features: [
-            'Verfügbar ab 5 Uhr morgens',
-            'Offline-Lesemodus',
-            'Auf allen Geräten nutzbar',
-            'Archiv-Zugriff',
-        ],
-        priceFrom: '12,90',
-    },
-    Website: {
-        icon: <Globe size={28} strokeWidth={1.5} />,
-        iconColor: '#16a34a',
-        iconBg: '#f0fdf4',
-        badge: null,
-        title: 'Website-Zugang',
-        subtitle: 'Unbegrenzter Zugriff auf alle Online-Inhalte',
-        features: [
-            'Alle Artikel online lesen',
-            'Exklusive Web-Inhalte',
-            'Kommentarfunktion',
-            'Newsletter inklusive',
-        ],
-        priceFrom: '7,90',
-    },
-}
-
-
 const FEATURES = [
-    {
-        icon: <Truck size={22} strokeWidth={1.5} />,
-        title: 'Zuverlässige Zustellung',
-        text: 'Pünktlich zum Frühstück — täglich zwischen 4 und 6 Uhr morgens an Ihrer Tür.',
-    },
-    {
-        icon: <Zap size={22} strokeWidth={1.5} />,
-        title: 'Sofort verfügbar',
-        text: 'E-Paper und Web-Zugang sind ab 5 Uhr morgens abrufbar — noch vor der Druckausgabe.',
-    },
-    {
-        icon: <CalendarCheck size={22} strokeWidth={1.5} />,
-        title: 'Monatlich kündbar',
-        text: 'Keine langen Vertragslaufzeiten. Kündigung jederzeit zum Monatsende möglich.',
-    },
-    {
-        icon: <Shield size={22} strokeWidth={1.5} />,
-        title: 'Keine Einrichtungsgebühr',
-        text: 'Starten Sie direkt ohne versteckte Kosten. Nur der monatliche Abopreis.',
-    },
+    { icon: <Truck        size={22} strokeWidth={1.5} />, title: 'Zuverlässige Zustellung',  text: 'Pünktlich zum Frühstück — täglich zwischen 4 und 6 Uhr morgens an Ihrer Tür.' },
+    { icon: <Zap          size={22} strokeWidth={1.5} />, title: 'Sofort verfügbar',          text: 'E-Paper und Web-Zugang sind ab 5 Uhr morgens abrufbar — noch vor der Druckausgabe.' },
+    { icon: <CalendarCheck size={22} strokeWidth={1.5} />, title: 'Monatlich kündbar',        text: 'Keine langen Vertragslaufzeiten. Kündigung jederzeit zum Monatsende möglich.' },
+    { icon: <Shield       size={22} strokeWidth={1.5} />, title: 'Keine Einrichtungsgebühr',  text: 'Starten Sie direkt ohne versteckte Kosten. Nur der monatliche Abopreis.' },
 ]
+
+const fmt = (n: number) => n.toFixed(2).replace('.', ',')
 
 // ── Root ──────────────────────────────────────────────
 export default function Home() {
@@ -112,7 +31,7 @@ export default function Home() {
     const navigate    = useNavigate()
     const [myAbos, setMyAbos] = useState<Abo[]>([])
 
-    function handleKonfigurieren(type: AboKey) {
+    function handleKonfigurieren(type: AboTyp) {
         dispatch(setField({ field: 'aboTyp', value: type } as any))
         navigate('/konfigurator')
     }
@@ -123,27 +42,21 @@ export default function Home() {
     }, [currentUser?.id])
 
     if (isLoggedIn && currentUser) {
-        const ownedTypes = new Set(myAbos.map(a => a.abotype))
+        const ownedTypes  = new Set(myAbos.map(a => a.abotype))
         const upsellTypes = ABO_TYPES.filter(t => !ownedTypes.has(t))
 
         return (
             <main className="home">
 
-                {/* ── Personalisierter Hero ── */}
                 <section className="home__hero home__hero--logged">
                     <p className="home__section-label">Willkommen zurück</p>
-                    <h1 className="home__hero-title home__hero-title--sm">
-                        Hallo, {currentUser.firstname}!
-                    </h1>
-                    <p className="home__hero-sub">
-                        Hier findest du deine aktiven Abonnements und weitere passende Angebote.
-                    </p>
-                    <Link to="/konfigurator" className="btn home__cta-primary" style={{ marginTop: 20 }}>
+                    <h1 className="home__hero-title home__hero-title--sm">Hallo, {currentUser.firstname}!</h1>
+                    <p className="home__hero-sub">Hier findest du deine aktiven Abonnements und weitere passende Angebote.</p>
+                    <Link to="/konfigurator" className="btn home__cta-primary home__cta-primary--spaced">
                         Neues Abo konfigurieren <ArrowRight size={16} strokeWidth={2.5} />
                     </Link>
                 </section>
 
-                {/* ── Meine Abos ── */}
                 <section className="home__my-abos">
                     <div className="home__section-label">Deine Abonnements</div>
                     <h2 className="home__section-title">Meine Abos</h2>
@@ -152,50 +65,39 @@ export default function Home() {
                         <div className="home__empty">
                             <PackageCheck size={36} strokeWidth={1.5} className="home__empty-icon" />
                             <p className="home__empty-text">Du hast noch kein aktives Abo.</p>
-                            <Link to="/konfigurator" className="btn home__cta-primary" style={{ marginTop: 4 }}>
+                            <Link to="/konfigurator" className="btn home__cta-primary">
                                 Jetzt konfigurieren <ArrowRight size={15} strokeWidth={2.5} />
                             </Link>
                         </div>
                     ) : (
                         <div className="home__abo-grid">
                             {myAbos.map(abo => {
-                                const meta = ABO_META[abo.abotype as AboKey]
-                                const fmt = (n: number) => n.toFixed(2).replace('.', ',')
+                                const meta     = ABO_META[abo.abotype as AboTyp]
                                 const isAnnual = abo.payment === 'Annual'
-                                const price = isAnnual ? abo.calculatedyearprice : abo.calculatedprice
-                                const priceLabel = isAnnual
-                                    ? `${fmt(price)} € / Jahr`
-                                    : `${fmt(price)} € / Monat`
+                                const price    = isAnnual ? abo.calculatedyearprice : abo.calculatedprice
                                 const startDate = new Date(abo.startabodate).toLocaleDateString('de-DE', {
                                     day: '2-digit', month: 'long', year: 'numeric',
                                 })
                                 return (
                                     <div key={abo.id} className="home__abo-card">
                                         <div className="home__abo-card-header">
-                                            <span
-                                                className="home__abo-icon"
-                                                style={{ color: meta?.iconColor, background: meta?.iconBg }}
-                                            >
-                                                {meta?.icon}
+                                            <span className="home__abo-icon" style={{ color: meta?.iconColor, background: meta?.iconBg }}>
+                                                {meta && <meta.Icon size={28} strokeWidth={1.5} />}
                                             </span>
                                             <div className="home__abo-card-title-wrap">
-                                                <span className="home__abo-card-title">
-                                                    {meta?.title ?? abo.abotype}
-                                                </span>
+                                                <span className="home__abo-card-title">{meta?.title ?? abo.abotype}</span>
                                                 <span className="home__abo-badge">Aktiv</span>
                                             </div>
                                         </div>
                                         <div className="home__abo-details">
-                                            <AboDetailRow label="Seit"         value={startDate} />
-                                            <AboDetailRow label="Preis"        value={priceLabel} highlight />
-                                            <AboDetailRow label="Zahlung"      value={PAYMENT_LABELS[abo.payment] ?? abo.payment} />
-                                            <AboDetailRow label="Zahlungsart"  value={ZAHLUNGSART_LABELS[abo.paymenttype] ?? abo.paymenttype} />
-                                            {abo.abotype === 'Printed' && (
-                                                <>
-                                                    <AboDetailRow label="Zustellung"  value={DELIVERY_LABELS[abo.deliverymethod] ?? abo.deliverymethod} />
-                                                    <AboDetailRow label="Belieferung" value={INTERVAL_LABELS[abo.subscriptiontype] ?? abo.subscriptiontype} />
-                                                </>
-                                            )}
+                                            <AboDetailRow label="Seit"        value={startDate} />
+                                            <AboDetailRow label="Preis"       value={`${fmt(price)} € / ${isAnnual ? 'Jahr' : 'Monat'}`} highlight />
+                                            <AboDetailRow label="Zahlung"     value={PAYMENT_LABELS[abo.payment] ?? abo.payment} />
+                                            <AboDetailRow label="Zahlungsart" value={ZAHLUNGSART_LABELS[abo.paymenttype] ?? abo.paymenttype} />
+                                            {abo.abotype === 'Printed' && <>
+                                                <AboDetailRow label="Zustellung"  value={DELIVERY_LABELS[abo.deliverymethod] ?? abo.deliverymethod} />
+                                                <AboDetailRow label="Belieferung" value={INTERVAL_LABELS[abo.subscriptiontype] ?? abo.subscriptiontype} />
+                                            </>}
                                         </div>
                                     </div>
                                 )
@@ -204,114 +106,71 @@ export default function Home() {
                     )}
                 </section>
 
-                {/* ── Upsell: fehlende Abo-Typen ── */}
                 {upsellTypes.length > 0 && (
                     <section className="home__abos">
                         <div className="home__section-label">
-                            <Sparkles size={11} strokeWidth={2.5} style={{ display: 'inline', marginRight: 5 }} />
+                            <Sparkles size={11} strokeWidth={2.5} className="home__sparkles" />
                             Empfohlen für dich
                         </div>
                         <h2 className="home__section-title">Das könnte dich auch interessieren</h2>
-                        <p className="home__section-sub">
-                            Ergänze dein Leseerlebnis mit einem weiteren Abo-Format.
-                        </p>
+                        <p className="home__section-sub">Ergänze dein Leseerlebnis mit einem weiteren Abo-Format.</p>
                         <div className={`home__cards home__cards--${upsellTypes.length}`}>
-                            {upsellTypes.map(type => {
-                                const m = ABO_META[type]
-                                return (
-                                    <article key={type} className={`home__card${m.badge ? ' home__card--featured' : ''}`}>
-                                        {m.badge && <span className="home__card-badge">{m.badge}</span>}
-                                        <div className="home__card-icon" style={{ color: m.iconColor, background: m.iconBg }}>
-                                            {m.icon}
-                                        </div>
-                                        <h3 className="home__card-title">{m.title}</h3>
-                                        <div className="home__card-price">
-                                            <span className="home__card-price-label">Ab</span>
-                                            <span className="home__card-price-value">{m.priceFrom}€</span>
-                                            <span className="home__card-price-period">/ Monat</span>
-                                        </div>
-                                        <div className="home__card-actions">
-                                            <Link to={ABO_URL[type]} className="btn home__card-action--secondary">
-                                                Abodetails
-                                            </Link>
-                                            <button
-                                                type="button"
-                                                className="btn home__card-action--primary"
-                                                onClick={() => handleKonfigurieren(type)}
-                                            >
-                                                Konfigurieren <ArrowRight size={13} strokeWidth={2.5} />
-                                            </button>
-                                        </div>
-                                    </article>
-                                )
-                            })}
+                            {upsellTypes.map(type => <AboCard key={type} type={type} onKonfigurieren={handleKonfigurieren} />)}
                         </div>
                     </section>
                 )}
 
-                {/* ── Features ── */}
                 <FeaturesSection />
-
             </main>
         )
     }
 
-    // ── Marketing-Seite für nicht eingeloggte Nutzer ──
     return (
         <main className="home">
-
             <section className="home__hero">
-                <h1 className="home__hero-title">Ihr Zeitungsabo: <br/> Einfach & flexibel
-                </h1>
+                <h1 className="home__hero-title">Ihr Zeitungsabo: <br /> Einfach & flexibel</h1>
             </section>
 
             <section className="home__abos" id="abos">
                 <div className="home__section-label">Unsere Angebote</div>
                 <h2 className="home__section-title">Wählen Sie Ihr perfektes Zeitungs-Abo</h2>
                 <div className="home__cards">
-                    {ABO_TYPES.map(type => {
-                        const m = ABO_META[type]
-                        return (
-                            <article key={type} className={`home__card${m.badge ? ' home__card--featured' : ''}`}>
-                                {m.badge && <span className="home__card-badge">{m.badge}</span>}
-                                <div className="home__card-icon" style={{ color: m.iconColor, background: m.iconBg }}>
-                                    {m.icon}
-                                </div>
-                                <h3 className="home__card-title">{m.title}</h3>
-                                <div className="home__card-price">
-                                    <span className="home__card-price-label">Ab</span>
-                                    <span className="home__card-price-value">{m.priceFrom}€</span>
-                                    <span className="home__card-price-period">/ Monat</span>
-                                </div>
-                                <div className="home__card-actions">
-                                    <Link to={ABO_URL[type]} className="btn home__card-action--secondary">
-                                        Abodetails
-                                    </Link>
-                                    <button
-                                        type="button"
-                                        className="btn home__card-action--primary"
-                                        onClick={() => handleKonfigurieren(type)}
-                                    >
-                                        Konfigurieren <ArrowRight size={13} strokeWidth={2.5} />
-                                    </button>
-                                </div>
-                            </article>
-                        )
-                    })}
+                    {ABO_TYPES.map(type => <AboCard key={type} type={type} onKonfigurieren={handleKonfigurieren} />)}
                 </div>
-                <p className="home__cards-hint" style={{ marginTop: 24, justifyContent: 'center' }}>
+                <p className="home__cards-hint home__cards-hint--centered">
                     <CheckCircle2 size={13} strokeWidth={2} className="home__trust-icon" />
                     Keine Einrichtungsgebühr · Monatlich kündbar
                 </p>
             </section>
 
             <FeaturesSection />
-
         </main>
     )
 }
 
-// Shared sub-components ─────────────────────────────
+// ── Sub-components ────────────────────────────────────
+
+function AboCard({ type, onKonfigurieren }: { type: AboTyp; onKonfigurieren: (t: AboTyp) => void }) {
+    const m = ABO_META[type]
+    return (
+        <article className={`home__card${m.badge ? ' home__card--featured' : ''}`}>
+            {m.badge && <span className="home__card-badge">{m.badge}</span>}
+            <div className="home__card-icon" style={{ color: m.iconColor, background: m.iconBg }}><m.Icon size={28} strokeWidth={1.5} /></div>
+            <h3 className="home__card-title">{m.title}</h3>
+            <div className="home__card-price">
+                <span className="home__card-price-label">Ab</span>
+                <span className="home__card-price-value">{m.priceFrom}€</span>
+                <span className="home__card-price-period">/ Monat</span>
+            </div>
+            <div className="home__card-actions">
+                <Link to={ABO_URL[type]} className="btn home__card-action--secondary">Abodetails</Link>
+                <button type="button" className="btn home__card-action--primary" onClick={() => onKonfigurieren(type)}>
+                    Konfigurieren <ArrowRight size={13} strokeWidth={2.5} />
+                </button>
+            </div>
+        </article>
+    )
+}
 
 function AboDetailRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
     return (

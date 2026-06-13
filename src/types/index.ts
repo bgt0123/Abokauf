@@ -35,6 +35,20 @@ export type Zahlungsintervall = 'Monthly' | 'Annual'
 /** Zahlung per Lastschrift oder per Rechnung */
 export type Zahlungsart = 'Direct debit' | 'Invoice'
 
+// ── Bestellung ────────────────────────────────────────────────────────────
+/** Wird per router location.state von KonfiguratorPage an BestellungBestaetigung übergeben */
+export interface BestellungState {
+    reference:         string
+    aboTyp:            string
+    lokalausgabe:      string
+    lieferAdresse:     string
+    rechnungsAdresse?: string
+    startDatum:        string
+    zahlungsintervall: string
+    zahlungsart:       string
+    preis:             number
+}
+
 // ── Konfigurator-State ─────────────────────────────────────────────────────
 /** Zwischenspeicher für den aktuell konfigurierten Abo-Entwurf */
 export interface KonfiguratorState {

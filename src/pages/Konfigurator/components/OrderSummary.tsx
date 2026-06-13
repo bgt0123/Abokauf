@@ -1,27 +1,6 @@
 import { useState } from 'react'
 import type { KonfiguratorState } from '../../../types'
-
-const ABO_LABELS: Record<string, string> = {
-    'Printed': 'Gedruckte Zeitung',
-    'E-paper': 'E-Paper',
-    'Website': 'Website-Zugang',
-}
-const DELIVERY_LABELS: Record<string, string> = {
-    'Delivery man': 'Austräger',
-    'Post':         'Post',
-}
-const INTERVAL_LABELS: Record<string, string> = {
-    'Daily':   'Täglich (Mo–Sa)',
-    'Weekend': 'Wochenende (Fr–Sa)',
-}
-const ZAHLUNG_LABELS: Record<string, string> = {
-    'Monthly': 'Monatlich',
-    'Annual':  'Jährlich (10% Rabatt)',
-}
-const ZAHLUNGSART_LABELS: Record<string, string> = {
-    'Direct debit': 'Lastschrift',
-    'Invoice':      'Rechnung',
-}
+import { ABO_LABELS, PAYMENT_LABELS, ZAHLUNGSART_LABELS, DELIVERY_LABELS, INTERVAL_LABELS } from '../../../constants/labels'
 
 interface Props {
     state:          KonfiguratorState
@@ -64,7 +43,7 @@ export function OrderSummary({
                         <SummaryRow label="Belieferung" value={INTERVAL_LABELS[state.belieferungsintervall ?? ''] ?? '–'} />
                     </>
                 )}
-                <SummaryRow label="Zahlung"     value={ZAHLUNG_LABELS[state.zahlungsintervall ?? ''] ?? '–'} />
+                <SummaryRow label="Zahlung"     value={PAYMENT_LABELS[state.zahlungsintervall ?? ''] ?? '–'} />
                 <SummaryRow label="Zahlungsart" value={ZAHLUNGSART_LABELS[state.zahlungsart ?? ''] ?? '–'} />
                 <SummaryRow label="Preis"       value={priceLabel} highlight />
             </div>

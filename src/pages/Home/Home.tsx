@@ -10,6 +10,7 @@ import { selectCurrentUser, selectIsLoggedIn } from '../../features/auth/authSli
 import { setField } from '../../features/konfigurator/konfiguratorSlice'
 import { readAllAbosForCustomer } from '../../api/api'
 import type { Abo, AboTyp } from '../../types'
+import { PAYMENT_LABELS, ZAHLUNGSART_LABELS, DELIVERY_LABELS, INTERVAL_LABELS } from '../../constants/labels'
 import './Home.css'
 
 // ── Katalog ───────────────────────────────────────────
@@ -79,22 +80,6 @@ const ABO_META: Record<AboKey, {
     },
 }
 
-const PAYMENT_LABELS: Record<string, string> = {
-    Monthly: 'Monatlich',
-    Annual:  'Jährlich',
-}
-const ZAHLUNGSART_LABELS: Record<string, string> = {
-    'Direct debit': 'Lastschrift',
-    Invoice:        'Rechnung',
-}
-const DELIVERY_LABELS: Record<string, string> = {
-    'Delivery man': 'Austräger',
-    Post:           'Post',
-}
-const INTERVAL_LABELS: Record<string, string> = {
-    Daily:   'Täglich',
-    Weekend: 'Wochenende',
-}
 
 const FEATURES = [
     {

@@ -1,33 +1,9 @@
 import { useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { CheckCircle2, Copy } from 'lucide-react'
 import { useState } from 'react'
+import type { BestellungState } from '../../types'
+import { ABO_LABELS, PAYMENT_LABELS, ZAHLUNGSART_LABELS } from '../../constants/labels'
 import './BestellungBestaetigung.css'
-
-export interface BestellungState {
-    reference:        string
-    aboTyp:           string
-    lokalausgabe:     string
-    lieferAdresse:    string
-    rechnungsAdresse?: string
-    startDatum:       string
-    zahlungsintervall: string
-    zahlungsart:      string
-    preis:            number
-}
-
-const ABO_LABELS: Record<string, string> = {
-    'Printed': 'Gedruckte Zeitung',
-    'E-paper': 'E-Paper',
-    'Website': 'Website-Zugang',
-}
-const ZAHLUNG_LABELS: Record<string, string> = {
-    'Monthly': 'Monatlich',
-    'Annual':  'Jährlich',
-}
-const ZAHLUNGSART_LABELS: Record<string, string> = {
-    'Direct debit': 'Lastschrift',
-    'Invoice':      'Rechnung',
-}
 
 export default function BestellungBestaetigung() {
     const location = useLocation()
@@ -82,7 +58,7 @@ export default function BestellungBestaetigung() {
                     <Row label="Rechnungsadresse" value={state.rechnungsAdresse} />
                 )}
                 <Row label="Startdatum"     value={new Date(state.startDatum).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })} />
-                <Row label="Zahlung"        value={ZAHLUNG_LABELS[state.zahlungsintervall] ?? state.zahlungsintervall} />
+                <Row label="Zahlung"        value={PAYMENT_LABELS[state.zahlungsintervall] ?? state.zahlungsintervall} />
                 <Row label="Zahlungsart"    value={ZAHLUNGSART_LABELS[state.zahlungsart] ?? state.zahlungsart} />
                 <Row label="Preis"          value={priceLabel} highlight />
             </div>

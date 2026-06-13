@@ -8,7 +8,7 @@
     text-align: center;
 }
 
-/* ── Icon ───────────────────────────────────────────── */
+/* Icon ───────────────────────────────────────────── */
 .bestaetigung-icon {
     width: 88px;
     height: 88px;
@@ -27,7 +27,7 @@
     color: #4ade80;
 }
 
-/* ── Heading ────────────────────────────────────────── */
+/* Heading ────────────────────────────────────────── */
 .bestaetigung-heading {
     display: flex;
     flex-direction: column;
@@ -49,7 +49,7 @@
     line-height: 1.5;
 }
 
-/* ── Reference ──────────────────────────────────────── */
+/* Reference ──────────────────────────────────────── */
 .bestaetigung-reference-wrap {
     display: flex;
     flex-direction: column;
@@ -80,7 +80,7 @@
     letter-spacing: 0.5px;
 }
 
-.bestaetigung-copy {
+.bestaetigung-copy { /* kopieren button */
     background: none;
     border: none;
     cursor: pointer;
@@ -89,7 +89,6 @@
     align-items: center;
     padding: 0;
     opacity: 0.7;
-    transition: opacity 0.15s;
 }
 
 .bestaetigung-copy:hover {

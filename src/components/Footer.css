@@ -19,7 +19,6 @@
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  letter-spacing: -0.3px;
 }
 
 .footer__brand-icon {
@@ -35,10 +34,7 @@
 }
 
 .footer__brand-text {
-  background: linear-gradient(90deg, #000420 0%, #2563eb 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #000b6e;
 }
 
 .footer__links {
@@ -50,17 +46,10 @@
   font-size: 13px;
   color: #888;
   text-decoration: none;
-  transition: color 0.15s;
 }
 
 .footer__link:hover {
   color: #000b6e;
-}
-
-.footer__copy {
-  font-size: 13px;
-  color: #aaa;
-  margin: 0;
 }
 
 [data-theme="dark"] .footer {
@@ -69,10 +58,7 @@
 }
 
 [data-theme="dark"] .footer__brand-text {
-  background: linear-gradient(90deg, #79c0ff 0%, #58a6ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #58a6ff;
 }
 
 [data-theme="dark"] .footer__link {
@@ -81,8 +67,4 @@
 
 [data-theme="dark"] .footer__link:hover {
   color: #58a6ff;
-}
-
-[data-theme="dark"] .footer__copy {
-  color: #484f58;
 }

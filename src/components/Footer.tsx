@@ -3,8 +3,6 @@ import { Newspaper } from 'lucide-react'
 import './Footer.css'
 
 export function Footer() {
-    const year = new Date().getFullYear()
-
     return (
         <footer className="footer">
             <Link to="/" className="footer__brand">
@@ -19,8 +17,6 @@ export function Footer() {
                 <Link to="/datenschutz" className="footer__link">Datenschutz</Link>
                 <Link to="/agb" className="footer__link">AGB</Link>
             </nav>
-
-            <p className="footer__copy">© {year} Abokauf</p>
         </footer>
     )
 }

@@ -21,7 +21,6 @@
     pointer-events: all;
     min-width: 260px;
     max-width: 380px;
-    animation: toast-in 0.22s ease;
 }
 
 .toast--success {

@@ -1,15 +1,13 @@
-/* ── Home ───────────────────────────────────────────── */
 .home {
     display: flex;
     flex-direction: column;
-    gap: 80px;
+    gap: 25px;
     padding-bottom: 80px;
     text-align: left;
 }
 
-/* ── Hero ───────────────────────────────────────────── */
 .home__hero {
-    padding: 64px 0 48px;
+    padding: 20px 0 20px;
     text-align: center;
 }
 

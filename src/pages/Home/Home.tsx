@@ -9,12 +9,12 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks'
 import { selectCurrentUser, selectIsLoggedIn } from '../../features/auth/authSlice'
 import { setField } from '../../features/konfigurator/konfiguratorSlice'
 import { readAllAbosForCustomer } from '../../api/api'
-import type { Abo } from '../../types'
+import type { Abo, AboTyp } from '../../types'
 import './Home.css'
 
 // ── Katalog ───────────────────────────────────────────
-const ABO_TYPES = ['Printed', 'E-paper', 'Website'] as const
-type AboKey = typeof ABO_TYPES[number]
+const ABO_TYPES: AboTyp[] = ['Printed', 'E-paper', 'Website']
+type AboKey = AboTyp
 
 const ABO_URL: Record<AboKey, string> = {
     Printed:  '/produkt/printed',
@@ -240,15 +240,6 @@ export default function Home() {
                                             {m.icon}
                                         </div>
                                         <h3 className="home__card-title">{m.title}</h3>
-                                        <p className="home__card-sub">{m.subtitle}</p>
-                                        <ul className="home__card-features">
-                                            {m.features.map(f => (
-                                                <li key={f}>
-                                                    <CheckCircle2 size={15} strokeWidth={2} className="home__check" />
-                                                    {f}
-                                                </li>
-                                            ))}
-                                        </ul>
                                         <div className="home__card-price">
                                             <span className="home__card-price-label">Ab</span>
                                             <span className="home__card-price-value">{m.priceFrom}€</span>
@@ -285,21 +276,13 @@ export default function Home() {
         <main className="home">
 
             <section className="home__hero">
-                <h1 className="home__hero-title">
-                    Ihr Zeitungsabo —<br />einfach &amp; flexibel
+                <h1 className="home__hero-title">Ihr Zeitungsabo: <br/> Einfach & flexibel
                 </h1>
-                <p className="home__hero-sub">
-                    Bleiben Sie informiert mit unserem flexiblen Abo-Angebot.<br />
-                    Wählen Sie zwischen gedruckter Zeitung, E-Paper oder Web-Zugang.
-                </p>
             </section>
 
             <section className="home__abos" id="abos">
                 <div className="home__section-label">Unsere Angebote</div>
                 <h2 className="home__section-title">Wählen Sie Ihr perfektes Zeitungs-Abo</h2>
-                <p className="home__section-sub">
-                    Alle Abos beinhalten den globalen Nachrichtenteil — nur die Lokalausgabe und Lieferart variieren.
-                </p>
                 <div className="home__cards">
                     {ABO_TYPES.map(type => {
                         const m = ABO_META[type]
@@ -310,15 +293,6 @@ export default function Home() {
                                     {m.icon}
                                 </div>
                                 <h3 className="home__card-title">{m.title}</h3>
-                                <p className="home__card-sub">{m.subtitle}</p>
-                                <ul className="home__card-features">
-                                    {m.features.map(f => (
-                                        <li key={f}>
-                                            <CheckCircle2 size={15} strokeWidth={2} className="home__check" />
-                                            {f}
-                                        </li>
-                                    ))}
-                                </ul>
                                 <div className="home__card-price">
                                     <span className="home__card-price-label">Ab</span>
                                     <span className="home__card-price-value">{m.priceFrom}€</span>
@@ -352,7 +326,7 @@ export default function Home() {
     )
 }
 
-// ── Shared sub-components ─────────────────────────────
+// Shared sub-components ─────────────────────────────
 
 function AboDetailRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
     return (

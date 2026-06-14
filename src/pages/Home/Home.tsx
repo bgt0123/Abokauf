@@ -45,9 +45,6 @@ export default function Home() {
                     <p className="home__section-label">Willkommen zurück</p>
                     <h1 className="home__hero-title home__hero-title--sm">Hallo, {currentUser.firstname}!</h1>
                     <p className="home__hero-sub">Hier findest du deine aktiven Abonnements und weitere passende Angebote.</p>
-                    <Link to="/konfigurator" className="btn home__cta-primary home__cta-primary--spaced">
-                        Neues Abo konfigurieren <ArrowRight size={16} strokeWidth={2.5} />
-                    </Link>
                 </section>
 
                 <section className="home__my-abos">
@@ -58,9 +55,6 @@ export default function Home() {
                         <div className="home__empty">
                             <PackageCheck size={36} strokeWidth={1.5} className="home__empty-icon" />
                             <p className="home__empty-text">Du hast noch kein aktives Abo.</p>
-                            <Link to="/konfigurator" className="btn home__cta-primary">
-                                Jetzt konfigurieren <ArrowRight size={15} strokeWidth={2.5} />
-                            </Link>
                         </div>
                     ) : (
                         <div className="home__abo-grid">

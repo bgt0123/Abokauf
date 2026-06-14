@@ -2,9 +2,9 @@
   margin-top: auto;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: 0 calc(50vw - 50% + 32px);
   height: 52px;
   border-top: 1px solid var(--border);

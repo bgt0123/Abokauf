@@ -1,28 +1,25 @@
 import { Info } from 'lucide-react'
-import { OptionCard } from './OptionCard'
-import type { KonfiguratorState, Zahlungsintervall, Zahlungsart } from '../../../types'
-import { calcDistanceSurcharge, calcYearlyPrice, formatPrice } from '../../../utils/priceUtils'
+import './PaymentForm.css'
+import { useAppDispatch, useAppSelector } from '../../../../app/hooks'
+import {
+    setField,
+    selectKonfigurator, selectDistanceKm,
+} from '../../../../features/konfigurator/konfiguratorSlice'
+import type { KonfiguratorState } from '../../../../types'
+import { calcDistanceSurcharge, calcMonthlyPrice, calcYearlyPrice, formatPrice } from '../../../../utils/priceUtils'
+import { OptionCard } from '../OptionCard'
 
-interface Props {
-    zahlungsintervall:         Zahlungsintervall | null
-    zahlungsart:               Zahlungsart | null
-    monthlyPrice:              number
-    distanceKm:                number | null
-    state:                     KonfiguratorState
-    onZahlungsintervallChange: (v: Zahlungsintervall) => void
-    onZahlungsartChange:       (v: Zahlungsart) => void
-}
+export function PaymentForm() {
+    const dispatch   = useAppDispatch()
+    const konfig     = useAppSelector(selectKonfigurator)
+    const distanceKm = useAppSelector(selectDistanceKm)
+    const monthly    = calcMonthlyPrice(konfig, distanceKm)
+    const annual     = calcYearlyPrice(monthly)
 
-export function PaymentForm({
-    zahlungsintervall,
-    zahlungsart,
-    monthlyPrice,
-    distanceKm,
-    state,
-    onZahlungsintervallChange,
-    onZahlungsartChange,
-}: Props) {
-    const annualPrice = calcYearlyPrice(monthlyPrice)
+    function set<K extends keyof KonfiguratorState>(field: K, value: KonfiguratorState[K]) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dispatch(setField({ field, value } as any))
+    }
 
     return (
         <div className="payment-form">
@@ -31,24 +28,18 @@ export function PaymentForm({
                 <div className="option-cards">
                     <OptionCard
                         label="Monatlich"
-                        description={`${formatPrice(monthlyPrice)} € / Monat`}
-                        selected={zahlungsintervall === 'Monthly'}
-                        onClick={() => onZahlungsintervallChange('Monthly')}
+                        description={`${formatPrice(monthly)} € / Monat`}
+                        selected={konfig.zahlungsintervall === 'Monthly'}
+                        onClick={() => set('zahlungsintervall', 'Monthly')}
                     />
                     <OptionCard
                         label="Jährlich"
-                        description={`${formatPrice(annualPrice)} € / Jahr · 10% Rabatt`}
-                        selected={zahlungsintervall === 'Annual'}
-                        onClick={() => onZahlungsintervallChange('Annual')}
+                        description={`${formatPrice(annual)} € / Jahr · 10% Rabatt`}
+                        selected={konfig.zahlungsintervall === 'Annual'}
+                        onClick={() => set('zahlungsintervall', 'Annual')}
                     />
                 </div>
-
-                <PriceInfo
-                    state={state}
-                    distanceKm={distanceKm}
-                    zahlungsintervall={zahlungsintervall}
-                    monthlyPrice={monthlyPrice}
-                />
+                <PriceInfo konfig={konfig} distanceKm={distanceKm} monthly={monthly} />
             </div>
 
             <div className="konfig-section">
@@ -57,14 +48,14 @@ export function PaymentForm({
                     <OptionCard
                         label="Lastschrift"
                         description="Automatischer Einzug, keine Gebühren"
-                        selected={zahlungsart === 'Direct debit'}
-                        onClick={() => onZahlungsartChange('Direct debit')}
+                        selected={konfig.zahlungsart === 'Direct debit'}
+                        onClick={() => set('zahlungsart', 'Direct debit')}
                     />
                     <OptionCard
                         label="Rechnung"
                         description="Zahlung per Rechnung"
-                        selected={zahlungsart === 'Invoice'}
-                        onClick={() => onZahlungsartChange('Invoice')}
+                        selected={konfig.zahlungsart === 'Invoice'}
+                        onClick={() => set('zahlungsart', 'Invoice')}
                     />
                 </div>
             </div>
@@ -75,28 +66,25 @@ export function PaymentForm({
 // ── Price info with hover breakdown ──────────────────
 
 function PriceInfo({
-    state, distanceKm, zahlungsintervall, monthlyPrice,
+    konfig, distanceKm, monthly,
 }: {
-    state:             KonfiguratorState
-    distanceKm:        number | null
-    zahlungsintervall: Zahlungsintervall | null
-    monthlyPrice:      number
+    konfig:     KonfiguratorState
+    distanceKm: number | null
+    monthly:    number
 }) {
-    const isPrinted  = state.aboTyp === 'Printed'
-    const isAnnual   = zahlungsintervall === 'Annual'
-    const base       = isPrinted
-        ? (state.belieferungsintervall === 'Weekend' ? 19.90 : 34.90)
-        : state.aboTyp === 'E-paper' ? 12.90 : 7.90
-    const post       = isPrinted && state.zustellungsart === 'Post' ? 3.00 : 0
-    const distance   = isPrinted ? calcDistanceSurcharge(distanceKm, state.zustellungsart) : 0
-    const annualPrice = calcYearlyPrice(monthlyPrice)
-    const discount   = Math.round((monthlyPrice * 12 - annualPrice) * 100) / 100
+    const isPrinted = konfig.aboTyp === 'Printed'
+    const isAnnual  = konfig.zahlungsintervall === 'Annual'
+    const base      = isPrinted
+        ? (konfig.belieferungsintervall === 'Weekend' ? 19.90 : 34.90)
+        : konfig.aboTyp === 'E-paper' ? 12.90 : 7.90
+    const post     = isPrinted && konfig.zustellungsart === 'Post' ? 3.00 : 0
+    const distance = isPrinted ? calcDistanceSurcharge(distanceKm, konfig.zustellungsart) : 0
+    const annual   = calcYearlyPrice(monthly)
+    const discount = Math.round((monthly * 12 - annual) * 100) / 100
 
     return (
         <div className="price-info-row">
-            <span className="price-info-row__label">
-                Wie setzt sich der Preis zusammen?
-            </span>
+            <span className="price-info-row__label">Wie setzt sich der Preis zusammen?</span>
             <span className="price-info">
                 <Info size={15} strokeWidth={2} className="price-info__icon" />
                 <span className="price-info__popup">
@@ -121,13 +109,13 @@ function PriceInfo({
                         <div className="price-breakdown__divider" />
                         <div className="price-breakdown__row">
                             <span>Monatspreis</span>
-                            <span>{formatPrice(monthlyPrice)} €</span>
+                            <span>{formatPrice(monthly)} €</span>
                         </div>
                         {isAnnual && (
                             <>
                                 <div className="price-breakdown__row">
                                     <span>× 12 Monate</span>
-                                    <span>{formatPrice(monthlyPrice * 12)} €</span>
+                                    <span>{formatPrice(monthly * 12)} €</span>
                                 </div>
                                 <div className="price-breakdown__row price-breakdown__row--discount">
                                     <span>Jahresrabatt (10%)</span>
@@ -136,7 +124,7 @@ function PriceInfo({
                                 <div className="price-breakdown__divider" />
                                 <div className="price-breakdown__row price-breakdown__row--total">
                                     <span>Jahrespreis</span>
-                                    <span>{formatPrice(annualPrice)} €</span>
+                                    <span>{formatPrice(annual)} €</span>
                                 </div>
                             </>
                         )}

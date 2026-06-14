@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import './OptionCard.css'
 
 interface Props {
     label: string

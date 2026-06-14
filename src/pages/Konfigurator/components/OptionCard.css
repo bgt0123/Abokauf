@@ -1,0 +1,47 @@
+.option-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+    cursor: pointer;
+    text-align: left;
+    flex: 1;
+    min-width: 130px;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.option-card:hover:not(:disabled) {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+}
+
+.option-card--selected {
+    border-color: var(--accent);
+    background: var(--accent-bg);
+}
+
+.option-card--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.option-card__icon {
+    color: var(--accent);
+    margin-bottom: 4px;
+}
+
+.option-card__label {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-h);
+}
+
+.option-card__desc {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.4;
+}

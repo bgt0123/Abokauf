@@ -1,0 +1,25 @@
+.delivery-address-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.delivery-address-form__row {
+    display: flex;
+    gap: 8px;
+}
+
+.delivery-address-form__row .input {
+    flex: 1;
+}
+
+.plz-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.plz-status--found    { color: var(--success, #16a34a); }
+.plz-status--not-found { color: var(--error, #dc2626); }

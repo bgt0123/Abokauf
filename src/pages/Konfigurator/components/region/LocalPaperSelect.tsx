@@ -1,5 +1,5 @@
-import type { LocalVersionsResult, LocalPaperVersion } from '../../../types'
-import { OptionCard } from './OptionCard'
+import type { LocalVersionsResult, LocalPaperVersion } from '../../../../types'
+import { OptionCard } from '../OptionCard'
 
 interface Props {
     versions: LocalVersionsResult

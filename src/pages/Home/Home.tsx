@@ -27,14 +27,7 @@ const fmt = (n: number) => n.toFixed(2).replace('.', ',')
 export default function Home() {
     const isLoggedIn  = useAppSelector(selectIsLoggedIn)
     const currentUser = useAppSelector(selectCurrentUser)
-    const dispatch    = useAppDispatch()
-    const navigate    = useNavigate()
     const [myAbos, setMyAbos] = useState<Abo[]>([])
-
-    function handleKonfigurieren(type: AboTyp) {
-        dispatch(setField({ field: 'aboTyp', value: type } as any))
-        navigate('/konfigurator')
-    }
 
     useEffect(() => {
         if (!currentUser) { setMyAbos([]); return }
@@ -115,7 +108,7 @@ export default function Home() {
                         <h2 className="home__section-title">Das könnte dich auch interessieren</h2>
                         <p className="home__section-sub">Ergänze dein Leseerlebnis mit einem weiteren Abo-Format.</p>
                         <div className={`home__cards home__cards--${upsellTypes.length}`}>
-                            {upsellTypes.map(type => <AboCard key={type} type={type} onKonfigurieren={handleKonfigurieren} />)}
+                            {upsellTypes.map(type => <AboCard key={type} type={type} />)}
                         </div>
                     </section>
                 )}
@@ -135,7 +128,7 @@ export default function Home() {
                 <div className="home__section-label">Unsere Angebote</div>
                 <h2 className="home__section-title">Wählen Sie Ihr perfektes Zeitungs-Abo</h2>
                 <div className="home__cards">
-                    {ABO_TYPES.map(type => <AboCard key={type} type={type} onKonfigurieren={handleKonfigurieren} />)}
+                    {ABO_TYPES.map(type => <AboCard key={type} type={type} />)}
                 </div>
                 <p className="home__cards-hint home__cards-hint--centered">
                     <CheckCircle2 size={13} strokeWidth={2} className="home__trust-icon" />
@@ -150,8 +143,17 @@ export default function Home() {
 
 // ── Sub-components ────────────────────────────────────
 
-function AboCard({ type, onKonfigurieren }: { type: AboTyp; onKonfigurieren: (t: AboTyp) => void }) {
+function AboCard({ type }: { type: AboTyp }) {
+    const dispatch = useAppDispatch()
+    const navigate = useNavigate()
     const m = ABO_META[type]
+
+    function handleKonfigurieren() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dispatch(setField({ field: 'aboTyp', value: type } as any))
+        navigate('/konfigurator')
+    }
+
     return (
         <article className={`home__card${m.badge ? ' home__card--featured' : ''}`}>
             {m.badge && <span className="home__card-badge">{m.badge}</span>}
@@ -164,7 +166,7 @@ function AboCard({ type, onKonfigurieren }: { type: AboTyp; onKonfigurieren: (t:
             </div>
             <div className="home__card-actions">
                 <Link to={ABO_URL[type]} className="btn home__card-action--secondary">Abodetails</Link>
-                <button type="button" className="btn home__card-action--primary" onClick={() => onKonfigurieren(type)}>
+                <button type="button" className="btn home__card-action--primary" onClick={handleKonfigurieren}>
                     Konfigurieren <ArrowRight size={13} strokeWidth={2.5} />
                 </button>
             </div>

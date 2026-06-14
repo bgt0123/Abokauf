@@ -36,7 +36,7 @@ export default function SignInPage() {
                             type="text"
                             className="input"
                             value={identifier}
-                            onChange={e => setIdentifier(e.target.value)}
+                            onChange={event => setIdentifier(event.target.value)}
                             required
                             autoComplete="username"
                         />
@@ -49,7 +49,7 @@ export default function SignInPage() {
                             type="password"
                             className="input"
                             value={password}
-                            onChange={e => setPassword(e.target.value)}
+                            onChange={event => setPassword(event.target.value)}
                             required
                             autoComplete="current-password"
                         />

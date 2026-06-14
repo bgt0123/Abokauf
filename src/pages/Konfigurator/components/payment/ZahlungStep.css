@@ -1,0 +1,12 @@
+.billing-address-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.billing-address-form__row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 12px;
+}

@@ -1,4 +1,5 @@
 import { Check } from 'lucide-react'
+import './StepIndicator.css'
 
 interface Props {
     labels: string[]

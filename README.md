@@ -1,6 +1,6 @@
 # Abokauf – Frontend
 
-Dies ist das Repository für die Abokauf-React-Frontend-Prüfung. Die Applikation wurde in Google Chrome entwickelt; eine Browserübergreifende Prüfung ist nicht Teil der Arbeit.
+Dies ist das Repository für die Abokauf-React-Frontend-Prüfung. Die Applikation wurde in Google Chrome entwickelt. Eine Browserübergreifende Prüfung ist nicht Teil der Arbeit.
 
 Aufgabe und weitere nützliche Dokumente befinden sich in `./documentation`. Das Backend liegt im `/api`-Ordner, ist aber nicht Teil dieser Arbeit.
 
@@ -26,6 +26,16 @@ Aufgabe und weitere nützliche Dokumente befinden sich in `./documentation`. Das
 npm install
 npm run dev
 ```
+
+---
+
+## Login
+
+E-Mail und Passwort eines in der API angelegten Kunden eingeben. 
+- email: `Matthias.Gutbrod@Reutlingen-University.de`
+- password: `daffdb966b609c1867d8873cf7c000e0edb0756d5830583b6ec6c8cfd6c28fd7f3dfa467ffd96f0c193b5747d48b97ee87e5ce4ec3fd5cee861a19d0a2a5eff5`
+
+> **Hinweis:** Das Feld „Benutzername" bei der Registrierung entspricht dem `companyname`-Attribut in der Datenbank.
 
 ---
 
@@ -75,13 +85,30 @@ Zusätzlich teilen `auth`-State (eingeloggter Nutzer) und der Konfigurator dense
 
 Die Slices haben absichtlich keine gegenseitigen Abhängigkeiten. `konfigurator` greift auf `currentUser.id` nicht via Selector zu, sondern bekommt sie aus der Page übergeben. Das hält die Thunks unabhängig testbar.
 
+#### Thunks
+
+Thunks werden für alle **asynchronen API-Aufrufe** genutzt – in Komponenten gibt es keine direkten API-Calls:
+
+| Thunk | Zweck |
+|---|---|
+| `loginThunk` / `registerThunk` / `updateUserThunk` | Auth-Aktionen |
+| `fetchLocalVersionsThunk` | Verfügbare Lokalausgaben für eine PLZ laden |
+| `fetchDistanceThunk` | Entfernung zum Verlag für Zuschlagsberechnung abfragen |
+| `submitAboThunk` | Abo-Objekt in der Datenbank anlegen |
+
+---
+
 #### Generische `setField`-Action statt vieler einzelner Actions
 Der Konfigurator-State hat 15 Felder. Die Alternative für jedes Feld eine eigene Action (`setAboTyp`, `setLieferPlz`, …) hätte 15 Reducer-Fälle erzeugt, die alle dasselbe machen: ein Feld schreiben. Stattdessen gibt es eine einzige generische Action.
 
 ---
 
 ### Redux vs. lokalem State: die Abwägung
-Nicht alles wandert in den Store.**State, den mehrere Komponenten lesen oder der eine Seite überleben muss → Redux. State, der nur lokal für UI-Interaktion gebraucht wird → `useState`.**
+
+**Faustregel: Props für 1 Ebene, Redux ab 2 Ebenen.**
+Daten oder Callbacks, die nur an eine direkte Kindkomponente weitergegeben werden, wandern als Prop. Sobald dieselben Daten über mehrere Ebenen oder an verteilte Komponenten (z. B. Step-Komponenten im Wizard, Login-State in Header und Konfigurator) müssen, kommt Redux.
+
+Nicht alles wandert in den Store. **State, den mehrere Komponenten lesen oder der eine Seite überleben muss → Redux. State, der nur lokal für UI-Interaktion gebraucht wird → `useState`.**
 
 | State | Wo | Begründung |
 |---|---|---|
